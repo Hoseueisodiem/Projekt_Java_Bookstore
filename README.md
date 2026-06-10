@@ -30,4 +30,27 @@ mvn verify
 ```
 
 ## Diagram ERD
-_(do uzupełnienia)_
+    AUTHORS | BOOKS : pisze
+    USERS   | LOANS : wypozycza
+    BOOKS   | LOANS : dotyczy
+
+    AUTHORS { bigint id PK
+              varchar first_name
+              varchar last_name }
+    USERS   { bigint id PK
+              varchar username UK
+              varchar email UK
+              varchar role
+              boolean enabled }
+    BOOKS   { bigint id PK
+              varchar book_type
+              varchar title
+              varchar isbn UK
+              bigint author_id FK
+              numeric price
+              int available_copies }
+    LOANS   { bigint id PK
+              bigint user_id FK
+              bigint book_id FK
+              varchar status
+              numeric penalty }
