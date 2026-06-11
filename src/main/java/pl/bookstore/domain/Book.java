@@ -37,8 +37,10 @@ public abstract class Book {
     @Column(name = "available_copies", nullable = false)
     private int availableCopies;
 
-    // metoda polimorficzna - okres wypozyczenia zalezy od typu pozycji
+    // metody polimorficzne - kazdy podtyp definiuje wlasna wersje
     public abstract int loanPeriodDays();
+
+    public abstract BookFormat format();
 
     public boolean isAvailable() {
         return availableCopies > 0;

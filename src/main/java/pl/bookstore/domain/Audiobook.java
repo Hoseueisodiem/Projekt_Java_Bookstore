@@ -21,4 +21,9 @@ public class Audiobook extends Book {
     public int loanPeriodDays() {
         return 21;
     }
+
+    @Override
+    public BookFormat format() {
+        return BookFormat.AUDIOBOOK;
+    }
 }
