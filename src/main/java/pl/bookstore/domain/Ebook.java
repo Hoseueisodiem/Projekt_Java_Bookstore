@@ -24,4 +24,9 @@ public class Ebook extends Book {
     public int loanPeriodDays() {
         return 14;
     }
+
+    @Override
+    public BookFormat format() {
+        return BookFormat.EBOOK;
+    }
 }

@@ -21,4 +21,9 @@ public class PrintedBook extends Book {
     public int loanPeriodDays() {
         return 30;
     }
+
+    @Override
+    public BookFormat format() {
+        return BookFormat.PRINTED;
+    }
 }
