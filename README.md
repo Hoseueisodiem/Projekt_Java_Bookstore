@@ -68,8 +68,8 @@ pl.bookstore
 ```mermaid
 erDiagram
     AUTHORS ||--o{ BOOKS : pisze
-    USERS   ||--o{ LOANS : wypozycza
-    BOOKS   ||--o{ LOANS : dotyczy
+    USERS ||--o{ LOANS : wypozycza
+    BOOKS ||--o{ LOANS : dotyczy
 
     AUTHORS {
         bigint id PK
@@ -78,21 +78,18 @@ erDiagram
     }
     USERS {
         bigint id PK
-        varchar username UK
-        varchar password
-        varchar email UK
+        varchar username
+        varchar email
         varchar role
         boolean enabled
-        timestamptz created_at
     }
     BOOKS {
         bigint id PK
         varchar book_type
         varchar title
-        varchar isbn UK
+        varchar isbn
         bigint author_id FK
         numeric price
-        int total_copies
         int available_copies
     }
     LOANS {
@@ -100,9 +97,6 @@ erDiagram
         bigint user_id FK
         bigint book_id FK
         varchar status
-        timestamptz reserved_at
-        timestamptz due_at
-        timestamptz returned_at
         numeric penalty
     }
 ```
