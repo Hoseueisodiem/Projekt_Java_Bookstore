@@ -170,3 +170,54 @@ Testy jednostkowe (Mockito) pokrywają warstwę serwisów, strategie kar oraz ko
 
 ### Aplikacja uruchomiona w Dockerze
 ![Docker](docs/docker.png)
+
+
+## Lokalizacja wymagań w kodzie
+
+Dokładne miejsca realizacji każdego wymagania (plik : linie).
+
+| Wymaganie | Plik | Linie | Co |
+|-----------|------|-------|----|
+| **Polimorfizm** | `domain/Book.java` | 11 | dziedziczenie JPA `@Inheritance(SINGLE_TABLE)` |
+| | `domain/Book.java` | 41, 43 | metody abstrakcyjne `loanPeriodDays()`, `format()` |
+| | `domain/PrintedBook.java` | 21, 27 | nadpisanie → 30 dni / `PRINTED` |
+| | `domain/Ebook.java` | 24, 30 | nadpisanie → 14 dni / `EBOOK` |
+| | `domain/Audiobook.java` | 21, 27 | nadpisanie → 21 dni / `AUDIOBOOK` |
+| | `service/LoanService.java` | 70 | użycie polimorficzne: `book.loanPeriodDays()` przy wypożyczeniu |
+| | `dto/BookResponse.java` | 23, 30 | użycie: `book.format()`, `book.loanPeriodDays()` |
+| **Wzorzec Strategy** | `service/penalty/PenaltyStrategy.java` | 5, 7 | interfejs strategii |
+| | `service/penalty/StandardPenaltyStrategy.java` | 8, 13 | implementacja (stała stawka) |
+| | `service/penalty/ProgressivePenaltyStrategy.java` | 8, 15 | implementacja (progresywna) |
+| | `config/PenaltyConfig.java` | 17–19 | wybór aktywnej strategii (bean `@Primary`) |
+| | `service/LoanService.java` | 28, 107–112 | wstrzyknięcie + użycie w `calculatePenalty()` |
+| **RBAC (USER/ADMIN)** | `config/SecurityConfig.java` | 17 | `filterChain()` |
+| | `config/SecurityConfig.java` | 26–27 | `hasRole("ADMIN")` dla zarządzania katalogiem |
+| | `config/SecurityConfig.java` | 29–31 | `.authenticated()` dla przeglądania i wypożyczeń |
+| | `security/CustomUserDetailsService.java` | 21, 28 | `loadUserByUsername()`, mapowanie na `ROLE_*` |
+| | `domain/Role.java` | 3–5 | enum `USER` / `ADMIN` |
+| | `domain/User.java` | 28–30 | pole `role` (`@Enumerated`) |
+| | `config/SecurityBeansConfig.java` | 12–13 | `PasswordEncoder` (BCrypt) |
+| | `db/migration/V2__seed_admin.sql` | 2–6 | zasiane konto admina |
+| **OOP + SOLID** | `service/BookService.java` | 25 | DI przez konstruktor (analogicznie w pozostałych serwisach) |
+| | pakiety `controller`/`service`/`repository`/`domain`/`dto` | — | podział na warstwy, separacja encji od DTO |
+| **REST API** | `controller/AuthController.java` | 27 | `POST /api/auth/register` |
+| | `controller/BookController.java` | 25–45 | GET/POST/DELETE książek + wyszukiwanie |
+| | `controller/AuthorController.java` | 17 | CRUD autorów |
+| | `controller/LoanController.java` | 23–43 | rezerwacja, wypożyczenie, zwrot, anulowanie, historia |
+| | `exception/GlobalExceptionHandler.java` | 15–28 | mapowanie wyjątków na 404 / 409 / 400 |
+| **Logika biznesowa (Spring)** | `service/*Service.java` | 13, 19, 22, 13 | `@Service` (Author/Book/Loan/User) |
+| | `service/UserService.java` | 35–36 | hashowanie hasła + rola `USER` przy rejestracji |
+| **Swagger UI** | `config/OpenApiConfig.java` | 15, 21–23 | definicja OpenAPI + schemat `basicAuth` |
+| | `controller/AuthController.java` | 18, 28 | adnotacje `@Tag`, `@Operation` |
+| | `pom.xml` | 52 | zależność `springdoc-openapi` |
+| **Hibernate + PostgreSQL** | `domain/*.java` | — | encje JPA (np. `Book.java:11`) |
+| | `resources/application.yml` | 4–5, 10 | datasource Postgres, `ddl-auto: validate` |
+| **Migracje (Flyway)** | `db/migration/V1__init.sql` | 1, 7, 17, 37 | tabele `authors`, `users`, `books`, `loans` |
+| | `db/migration/V2__seed_admin.sql` | — | konto administratora |
+| | `resources/application.yml` | 15 | włączenie Flyway |
+| **Docker** | `Dockerfile`, `docker-compose.yml`, `.dockerignore` | — | obraz wieloetapowy + app & db |
+| **Maven** | `pom.xml` | — | zależności i konfiguracja buildu |
+| **Testy ≥ 80% (JUnit + JaCoCo)** | `src/test/java/pl/bookstore/**` | — | testy serwisów, strategii, kontrolerów, security |
+| | `pom.xml` | 117, 153 | `jacoco-maven-plugin`, bramka `<minimum>0.80</minimum>` |
+| **Dokumentacja** | `README.md`, `docs/` | — | opis + diagram ERD + zrzuty ekranu |
+
